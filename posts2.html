@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <script>
+    // List of posts (manual for now, but easy to update)
+    const posts = [
+      "posts/post1.html",
+      "posts/post2.html",
+      "posts/post3.html"
+    ];
+
+    async function loadPosts() {
+      const container = document.getElementById("posts-container");
+      for (let file of posts) {
+        try {
+          let response = await fetch(file);
+          if (!response.ok) throw new Error("Could not load " + file);
+          let content = await response.text();
+
+          let postDiv = document.createElement("div");
+          postDiv.className = "post";
+          postDiv.innerHTML = content;
+          container.appendChild(postDiv);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+    }
+
+    window.onload = loadPosts;
+  </script>
+</head>
+<body>
+  <header>
+    <h1>🚀 My Blog</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <div class="container" id="posts-container">
+    <!-- Posts will be loaded here -->
+  </div>
+
+  <footer>
+    <p>© 2025 My Blog</p>
+  </footer>
+</body>
+</html>
