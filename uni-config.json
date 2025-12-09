@@ -1,0 +1,72 @@
+{
+  "academicYear": "2025-2026",
+  "university": "Universitatea de Vest din Timișoara",
+  "semesters": [
+    {
+      "name": "Semestrul I",
+      "startDate": "2025-09-29",
+      "endDate": "2026-02-22",
+      "weeks": [
+        {"weekNumber": 1, "startDate": "2025-09-29", "type": "teaching"},
+        {"weekNumber": 2, "startDate": "2025-10-06", "type": "teaching"},
+        {"weekNumber": 3, "startDate": "2025-10-13", "type": "teaching"},
+        {"weekNumber": 4, "startDate": "2025-10-20", "type": "teaching"},
+        {"weekNumber": 5, "startDate": "2025-10-27", "type": "teaching"},
+        {"weekNumber": 6, "startDate": "2025-11-03", "type": "teaching"},
+        {"weekNumber": 7, "startDate": "2025-11-10", "type": "teaching"},
+        {"weekNumber": 8, "startDate": "2025-11-17", "type": "teaching"},
+        {"weekNumber": 9, "startDate": "2025-11-24", "type": "teaching"},
+        {"weekNumber": 10, "startDate": "2025-12-01", "type": "teaching"},
+        {"weekNumber": 11, "startDate": "2025-12-08", "type": "teaching"},
+        {"weekNumber": 12, "startDate": "2025-12-15", "type": "teaching"},
+        {"weekNumber": "Vacanță", "startDate": "2025-12-20", "endDate": "2026-01-07", "type": "holiday"},
+        {"weekNumber": 13, "startDate": "2026-01-08", "type": "teaching"},
+        {"weekNumber": 14, "startDate": "2026-01-12", "type": "teaching"},
+        {"weekNumber": "Sesiunea A-I", "startDate": "2026-01-17", "endDate": "2026-02-08", "type": "exams"},
+        {"weekNumber": "Vacanță", "startDate": "2026-02-09", "endDate": "2026-02-15", "type": "holiday"},
+        {"weekNumber": "Sesiunea B-I", "startDate": "2026-02-16", "endDate": "2026-02-22", "type": "makeup-exams"}
+      ],
+      "holidays": [
+        {"name": "Ziua Națională a României", "startDate": "2025-12-01", "endDate": "2025-12-01"},
+        {"name": "Vacanță de iarnă", "startDate": "2025-12-20", "endDate": "2026-01-07"},
+        {"name": "Botezul Domnului", "startDate": "2026-01-06", "endDate": "2026-01-06"},
+        {"name": "Soborul Sfântului Proroc Ioan Botezătorul", "startDate": "2026-01-07", "endDate": "2026-01-07"},
+        {"name": "Ziua Unirii Principatelor Române", "startDate": "2026-01-24", "endDate": "2026-01-24"}
+      ]
+    },
+    {
+      "name": "Semestrul II",
+      "startDate": "2026-02-23",
+      "endDate": "2026-07-08",
+      "weeks": [
+        {"weekNumber": 1, "startDate": "2026-02-23", "type": "teaching"},
+        {"weekNumber": 2, "startDate": "2026-03-02", "type": "teaching"},
+        {"weekNumber": 3, "startDate": "2026-03-09", "type": "teaching"},
+        {"weekNumber": 4, "startDate": "2026-03-16", "type": "teaching"},
+        {"weekNumber": 5, "startDate": "2026-03-23", "type": "teaching"},
+        {"weekNumber": 6, "startDate": "2026-03-30", "type": "teaching"},
+        {"weekNumber": "Vacanță de Paște", "startDate": "2026-04-04", "endDate": "2026-04-14", "type": "holiday"},
+        {"weekNumber": 7, "startDate": "2026-04-15", "type": "teaching"},
+        {"weekNumber": 8, "startDate": "2026-04-22", "type": "teaching"},
+        {"weekNumber": 9, "startDate": "2026-04-29", "type": "teaching"},
+        {"weekNumber": 10, "startDate": "2026-05-06", "type": "teaching"},
+        {"weekNumber": 11, "startDate": "2026-05-13", "type": "teaching"},
+        {"weekNumber": 12, "startDate": "2026-05-20", "type": "teaching"},
+        {"weekNumber": 13, "startDate": "2026-05-27", "type": "teaching"},
+        {"weekNumber": 14, "startDate": "2026-06-03", "type": "teaching"},
+        {"weekNumber": "Sesiunea A-II", "startDate": "2026-06-06", "endDate": "2026-06-28", "type": "exams"},
+        {"weekNumber": "Vacanță", "startDate": "2026-06-29", "endDate": "2026-07-01", "type": "holiday"},
+        {"weekNumber": "Sesiunea B-II", "startDate": "2026-07-02", "endDate": "2026-07-08", "type": "makeup-exams"}
+      ],
+      "holidays": [
+        {"name": "Vacanța de Paște", "startDate": "2026-04-04", "endDate": "2026-04-14"},
+        {"name": "Vinerea Mare", "startDate": "2026-04-10", "endDate": "2026-04-10"},
+        {"name": "Paștele (a doua zi)", "startDate": "2026-04-13", "endDate": "2026-04-13"},
+        {"name": "Paștele (a treia zi)", "startDate": "2026-04-14", "endDate": "2026-04-14"},
+        {"name": "Ziua Muncii", "startDate": "2026-05-01", "endDate": "2026-05-01"},
+        {"name": "Ceremonia de absolvire UVT", "startDate": "2026-05-23", "endDate": "2026-05-23"},
+        {"name": "Rusalii / Ziua Copilului", "startDate": "2026-06-01", "endDate": "2026-06-01"}
+      ]
+    }
+  ]
+}

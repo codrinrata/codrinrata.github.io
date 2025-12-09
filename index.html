@@ -1,17 +1,284 @@
 <!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>CDRN</title>
+    <title>University Week - CDRN</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .week-display {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .week-number {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #111;
+            margin: 1rem 0;
+        }
+        .week-type {
+            font-size: 1.5rem;
+            color: #666;
+            margin: 0.5rem 0;
+            text-transform: capitalize;
+        }
+        .week-dates {
+            font-size: 1rem;
+            color: #888;
+            margin: 0.5rem 0;
+        }
+        .semester-info {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid #f0f0f0;
+            color: #666;
+        }
+        .holiday-notice {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 4px;
+            color: #856404;
+        }
+        .no-semester {
+            color: #888;
+            font-style: italic;
+        }
+        .error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-radius: 4px;
+            color: #721c24;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="index.html">HOME</a>
-            <a href="film.html">FILM</a>
-            <a href="about.html">ABOUT</a>
-            <a href="posts.html">BLOG</a>
-        </nav>
-    </header>
 
+    <div class="container">
+        <div class="week-display" id="weekDisplay">
+            <div>Loading...</div>
+        </div>
+    </div>
 
+    <script>
+        async function loadWeekInfo() {
+            try {
+                const response = await fetch('uni-config.json');
+                const config = await response.json();
+                displayWeekInfo(config);
+            } catch (error) {
+                document.getElementById('weekDisplay').innerHTML = `
+                    <div class="error">
+                        <strong>Eroare:</strong> Nu s-a putut încărca configurația anului universitar.
+                    </div>
+                `;
+            }
+        }
+
+        function displayWeekInfo(config) {
+            // Check for date override in URL parameter (?date=YYYY-MM-DD)
+            const urlParams = new URLSearchParams(window.location.search);
+            const dateParam = urlParams.get('date');
+            
+            let today;
+            if (dateParam) {
+                today = new Date(dateParam + 'T12:00:00'); // Add time to avoid timezone issues
+                console.log('Using override date:', dateParam, 'Parsed as:', today);
+            } else {
+                today = new Date();
+            }
+            today.setHours(0, 0, 0, 0); // Normalize to start of day
+            console.log('Today (normalized):', today.toISOString());
+            
+            // Find current semester
+            let currentSemester = null;
+            for (const semester of config.semesters) {
+                const semesterStart = new Date(semester.startDate);
+                const semesterEnd = new Date(semester.endDate);
+                
+                if (today >= semesterStart && today <= semesterEnd) {
+                    currentSemester = semester;
+                    break;
+                }
+            }
+
+            const display = document.getElementById('weekDisplay');
+            
+            if (!currentSemester) {
+                display.innerHTML = `
+                    <div class="week-number">—</div>
+                    <div class="no-semester">Nu suntem în semestru momentan</div>
+                    <div class="semester-info">
+                        ${config.university || ''}<br>
+                        An universitar: ${config.academicYear}<br>
+                        Data curentă: ${today.toLocaleDateString('ro-RO', { 
+                            weekday: 'long', 
+                            year: 'numeric', 
+                            month: 'long', 
+                            day: 'numeric' 
+                        })}
+                    </div>
+                `;
+                return;
+            }
+
+            // Find current week/period
+            let currentWeek = null;
+            console.log('Looking for week containing:', today.toISOString());
+            for (let i = 0; i < currentSemester.weeks.length; i++) {
+                const week = currentSemester.weeks[i];
+                const weekStart = new Date(week.startDate + 'T12:00:00');
+                weekStart.setHours(0, 0, 0, 0);
+                let weekEnd;
+                
+                // Check if week has explicit endDate (for multi-week periods)
+                if (week.endDate) {
+                    weekEnd = new Date(week.endDate + 'T12:00:00');
+                    weekEnd.setHours(0, 0, 0, 0);
+                } else {
+                    // Week ends either at 6 days later OR the day before the next week starts
+                    const nextWeek = currentSemester.weeks[i + 1];
+                    if (nextWeek) {
+                        const nextWeekStart = new Date(nextWeek.startDate + 'T12:00:00');
+                        nextWeekStart.setHours(0, 0, 0, 0);
+                        weekEnd = new Date(nextWeekStart);
+                        weekEnd.setDate(weekEnd.getDate() - 1); // Day before next week
+                    } else {
+                        weekEnd = new Date(weekStart);
+                        weekEnd.setDate(weekEnd.getDate() + 6); // Standard 7-day week
+                    }
+                }
+                
+                console.log(`Week ${week.weekNumber}: ${weekStart.toISOString()} to ${weekEnd.toISOString()}`);
+                
+                if (today >= weekStart && today <= weekEnd) {
+                    currentWeek = week;
+                    console.log('Found matching week:', week.weekNumber);
+                    break;
+                }
+            }
+            console.log('Current week result:', currentWeek);
+
+            // Check for holidays
+            let holidayInfo = '';
+            let currentHoliday = null;
+            for (const holiday of currentSemester.holidays) {
+                const holidayStart = new Date(holiday.startDate + 'T12:00:00');
+                holidayStart.setHours(0, 0, 0, 0);
+                const holidayEnd = new Date(holiday.endDate + 'T12:00:00');
+                holidayEnd.setHours(0, 0, 0, 0);
+                
+                if (today >= holidayStart && today <= holidayEnd) {
+                    currentHoliday = holiday;
+                    holidayInfo = `
+                        <div class="holiday-notice">
+                            <strong>🎉 ${holiday.name}</strong>
+                        </div>
+                    `;
+                    break;
+                }
+            }
+
+            if (currentWeek) {
+                const weekStart = new Date(currentWeek.startDate + 'T12:00:00');
+                weekStart.setHours(0, 0, 0, 0);
+                let weekEnd;
+                
+                // Calculate week end date consistently with the search logic
+                if (currentWeek.endDate) {
+                    weekEnd = new Date(currentWeek.endDate + 'T12:00:00');
+                    weekEnd.setHours(0, 0, 0, 0);
+                } else {
+                    // Find the index of current week to check for next week
+                    const weekIndex = currentSemester.weeks.indexOf(currentWeek);
+                    const nextWeek = currentSemester.weeks[weekIndex + 1];
+                    
+                    if (nextWeek) {
+                        const nextWeekStart = new Date(nextWeek.startDate + 'T12:00:00');
+                        nextWeekStart.setHours(0, 0, 0, 0);
+                        weekEnd = new Date(nextWeekStart);
+                        weekEnd.setDate(weekEnd.getDate() - 1); // Day before next week
+                    } else {
+                        weekEnd = new Date(weekStart);
+                        weekEnd.setDate(weekEnd.getDate() + 6); // Standard 7-day week
+                    }
+                }
+                
+                const weekTypeLabels = {
+                    'teaching': 'Activitate didactică',
+                    'study': 'Săptămână de studiu',
+                    'exams': 'Sesiune examene',
+                    'makeup-exams': 'Sesiune restanțe / Măriri note',
+                    'holiday': 'Vacanță'
+                };
+                
+                // Format week number display - prioritize holiday name for single-day holidays
+                let weekNumberDisplay;
+                let weekTypeDisplay;
+                
+                if (currentHoliday) {
+                    const holidayStart = new Date(currentHoliday.startDate + 'T12:00:00');
+                    holidayStart.setHours(0, 0, 0, 0);
+                    const holidayEnd = new Date(currentHoliday.endDate + 'T12:00:00');
+                    holidayEnd.setHours(0, 0, 0, 0);
+                    const isMultiDay = holidayStart.getTime() !== holidayEnd.getTime();
+                    
+                    if (!isMultiDay && currentWeek.type === 'teaching') {
+                        // Single-day holiday during a teaching week
+                        weekNumberDisplay = currentHoliday.name;
+                        weekTypeDisplay = `Săptămâna ${currentWeek.weekNumber}`;
+                    } else {
+                        // Multi-day holiday or holiday week
+                        if (typeof currentWeek.weekNumber === 'number') {
+                            weekNumberDisplay = `Săptămâna ${currentWeek.weekNumber}`;
+                        } else {
+                            weekNumberDisplay = currentWeek.weekNumber;
+                        }
+                        weekTypeDisplay = weekTypeLabels[currentWeek.type] || currentWeek.type;
+                    }
+                } else {
+                    if (typeof currentWeek.weekNumber === 'number') {
+                        weekNumberDisplay = `Săptămâna ${currentWeek.weekNumber}`;
+                    } else {
+                        weekNumberDisplay = currentWeek.weekNumber;
+                    }
+                    weekTypeDisplay = weekTypeLabels[currentWeek.type] || currentWeek.type;
+                }
+                
+                display.innerHTML = `
+                    <div class="week-number">${weekNumberDisplay}</div>
+                    <div class="week-type">${weekTypeDisplay}</div>
+                    <div class="week-dates">
+                        ${weekStart.toLocaleDateString('ro-RO', { day: 'numeric', month: 'short' })} - 
+                        ${weekEnd.toLocaleDateString('ro-RO', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </div>
+                    ${holidayInfo}
+                    <div class="semester-info">
+                        ${currentSemester.name}<br>
+                        ${config.university || ''}<br>
+                        An universitar: ${config.academicYear}
+                    </div>
+                `;
+            } else {
+                display.innerHTML = `
+                    <div class="week-number">—</div>
+                    <div class="no-semester">Informații despre săptămână indisponibile</div>
+                    ${holidayInfo}
+                    <div class="semester-info">
+                        ${currentSemester.name}<br>
+                        ${config.university || ''}<br>
+                        An universitar: ${config.academicYear}
+                    </div>
+                `;
+            }
+        }
+
+        // Load week info when page loads
+        loadWeekInfo();
+    </script>
 </body>
+</html>
